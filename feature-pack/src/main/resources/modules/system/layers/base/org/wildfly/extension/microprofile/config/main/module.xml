@@ -1,6 +1,6 @@
 <module xmlns="urn:jboss:module:1.5" name="org.wildfly.extension.microprofile.config">
     <resources>
-        <artifact name="${org.wildfly:wildfly-microprofile-config-extension}"/>
+        <artifact name="${io.thorntail:microprofile-config-wildfly-extension}"/>
     </resources>
 
     <dependencies>

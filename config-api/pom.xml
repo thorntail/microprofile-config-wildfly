@@ -4,13 +4,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.wildfly</groupId>
-    <artifactId>wildfly-microprofile-config</artifactId>
+    <groupId>io.thorntail</groupId>
+    <artifactId>microprofile-config-wildfly</artifactId>
     <version>1.3.1-SNAPSHOT</version>
   </parent>
 
   <groupId>io.thorntail</groupId>
-  <artifactId>microprofile-config-api</artifactId>
+  <artifactId>microprofile-config-wildlfy-config-api</artifactId>
   <name>Thorntail: Config API for MicroProfile Config</name>
   <packaging>jar</packaging>
 
