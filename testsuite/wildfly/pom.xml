@@ -20,12 +20,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.wildfly</groupId>
-        <artifactId>wildfly-microprofile-config-testsuite</artifactId>
-        <version>1.3.1-SNAPSHOT</version>
+        <groupId>io.thorntail</groupId>
+        <artifactId>microprofile-config-wildfly-testsuite</artifactId>
+        <version>1.5.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>wildfly-microprofile-config-testsuite-wildfly</artifactId>
+    <artifactId>microprofile-config-wildfly-testsuite-wildfly</artifactId>
     <name>WildFly: MicroProfile Config - WildFly Test Suite</name>
     <packaging>jar</packaging>
 
