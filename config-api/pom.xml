@@ -10,7 +10,7 @@
   </parent>
 
   <groupId>io.thorntail</groupId>
-  <artifactId>microprofile-config-wildlfy-config-api</artifactId>
+  <artifactId>microprofile-config-wildfly-config-api</artifactId>
   <name>Thorntail: Config API for MicroProfile Config</name>
   <packaging>jar</packaging>
 
