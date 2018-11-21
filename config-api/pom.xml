@@ -6,7 +6,7 @@
   <parent>
     <groupId>io.thorntail</groupId>
     <artifactId>microprofile-config-wildfly</artifactId>
-    <version>1.3.1-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
   </parent>
 
   <groupId>io.thorntail</groupId>
@@ -133,8 +133,8 @@
             </goals>
             <phase>validate</phase>
             <configuration>
-              <groupId>org.wildfly</groupId>
-              <artifactId>wildfly-microprofile-config-dist</artifactId>
+              <groupId>io.thorntail</groupId>
+              <artifactId>microprofile-config-wildfly-dist</artifactId>
               <version>${project.version}</version>
               <packaging>zip</packaging>
               <server-config>standalone-microprofile.xml</server-config>
