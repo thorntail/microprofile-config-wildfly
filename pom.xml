@@ -55,8 +55,8 @@
     </properties>
 
     <scm>
-        <connection>scm:git:https://github.com/thorntail/microprofile-config-wildfly.git</connection>
-        <developerConnection>scm:git:https://github.com/thorntail/microprofile-config-wildfly.git</developerConnection>
+        <connection>scm:git:git@github.com:thorntail/microprofile-config-wildfly.git</connection>
+        <developerConnection>scm:git:git@github.com:thorntail/microprofile-config-wildfly.git</developerConnection>
         <url>https://github.com/thorntail/microprofile-config-wildfly/</url>
       <tag>HEAD</tag>
   </scm>
