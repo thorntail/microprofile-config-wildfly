@@ -27,7 +27,7 @@
 
     <groupId>io.thorntail</groupId>
     <artifactId>microprofile-config-wildfly</artifactId>
-    <version>1.5.2-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
 
     <packaging>pom</packaging>
     <name>WildFly: MicroProfile Config</name>
@@ -36,23 +36,23 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <version.eclipse.microprofile.config>1.3</version.eclipse.microprofile.config>
-        <version.smallrye>1.3.4</version.smallrye>
-        <version.io.thorntail.config-api>1.5.3</version.io.thorntail.config-api>
+        <version.smallrye>1.3.5</version.smallrye>
+        <version.io.thorntail.config-api>1.6.0</version.io.thorntail.config-api>
         <version.javax.annotation-api>1.3.2</version.javax.annotation-api>
         <version.javax.enterprise.cdi-api>2.0.SP1</version.javax.enterprise.cdi-api>
         <version.javax.javaee-api>8.0</version.javax.javaee-api>
         <version.junit>4.11</version.junit>
-        <version.org.jboss.arquillian>1.1.13.Final</version.org.jboss.arquillian>
+        <version.org.jboss.arquillian>1.1.14.Final</version.org.jboss.arquillian>
         <version.org.jboss.arquillian.container.weld-embedded>2.0.0.Final</version.org.jboss.arquillian.container.weld-embedded>
         <version.org.jboss.logging.jboss-logging-tools>2.1.0.Final</version.org.jboss.logging.jboss-logging-tools>
         <version.org.jboss.weld>3.0.SP4</version.org.jboss.weld>
         <version.org.jboss.weld.core.impl>3.0.5.Final</version.org.jboss.weld.core.impl>
-        <version.org.wildfly>14.0.1.Final</version.org.wildfly>
-        <version.org.wildfly.core>6.0.2.Final</version.org.wildfly.core>
+        <version.org.wildfly>15.0.0.Final</version.org.wildfly>
+        <version.org.wildfly.core>7.0.0.Final</version.org.wildfly.core>
         <version.org.wildfly.arquillian>2.1.1.Final</version.org.wildfly.arquillian>
         <version.org.wildfly.build-tools>1.2.10.Final</version.org.wildfly.build-tools>
         <version.org.wildfly.plugin>1.2.1.Final</version.org.wildfly.plugin>
-        <version.org.apache.httpcomponents>4.5.2</version.org.apache.httpcomponents>
+        <version.org.apache.httpcomponents>4.5.4</version.org.apache.httpcomponents>
     </properties>
 
     <scm>
