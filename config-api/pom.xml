@@ -40,7 +40,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>1.4.0</version>
         <dependencies>
           <dependency>
             <groupId>io.thorntail</groupId>
@@ -99,7 +98,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.16</version>
         <executions>
           <execution>
             <id>verify</id>
@@ -152,7 +150,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.18.1</version>
         <configuration>
           <systemProperties>
             <property>
@@ -171,26 +168,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.3</version>
         <configuration>
           <show>public</show>
           <reportOutputDirectory>${project.reporting.outputDirectory}/${project.version}</reportOutputDirectory>
           <header>WildFly Configuration API, ${project.version}</header>
           <footer>WildFly Configuration API, ${project.version}</footer>
           <doctitle>WildFly Configuration API, ${project.version}</doctitle>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-scm-publish-plugin</artifactId>
-        <version>1.1</version>
-        <configuration>
-          <checkoutDirectory>${project.build.directory}/scmpublish</checkoutDirectory>
-          <checkinComment>Publishing javadoc for ${project.artifactId}:${project.version}</checkinComment>
-          <content>${project.reporting.outputDirectory}</content>
-          <skipDeletedFiles>true</skipDeletedFiles>
-          <pubScmUrl>scm:git:git@github.com:wildfly-swarm/wildfly-config-api.git</pubScmUrl>
-          <scmBranch>gh-pages</scmBranch> <!-- branch with static site -->
         </configuration>
       </plugin>
     </plugins>
