@@ -16,22 +16,16 @@
 
 package org.wildfly.extension.microprofile.config;
 
-import io.undertow.server.handlers.PathHandler;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.msc.service.Service;
-import org.jboss.msc.service.ServiceBuilder;
 import org.jboss.msc.service.StartContext;
-import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 
 /**
  * @author <a href="http://jmesnil.net/">Jeff Mesnil</a> (c) 2017 Red Hat inc.
  */
-public class ConfigSourceService implements Service<ConfigSource> {
-
-    private final InjectedValue<PathHandler> pathHandlerInjectedValue = new InjectedValue<>();
+class ConfigSourceService implements Service<ConfigSource> {
 
     private final String name;
     private final ConfigSource configSource;
@@ -42,12 +36,14 @@ public class ConfigSourceService implements Service<ConfigSource> {
     }
 
     static void install(OperationContext context, String name, ConfigSource configSource) {
-        ConfigSourceService service = new ConfigSourceService(name, configSource);
-        ServiceBuilder<ConfigSource> serviceBuilder = context.getServiceTarget().addService(ServiceNames.CONFIG_SOURCE.append(name), service);
-        serviceBuilder.install();
+        context.getServiceTarget()
+                .addService(ServiceNames.CONFIG_SOURCE.append(name))
+                .setInstance(new ConfigSourceService(name, configSource))
+                .install();
     }
+
     @Override
-    public void start(StartContext startContext) throws StartException {
+    public void start(StartContext startContext) {
     }
 
     @Override
@@ -58,4 +54,5 @@ public class ConfigSourceService implements Service<ConfigSource> {
     public ConfigSource getValue() throws IllegalStateException, IllegalArgumentException {
         return configSource;
     }
+
 }

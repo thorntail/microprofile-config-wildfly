@@ -36,7 +36,7 @@ public interface MicroProfileConfigLogger extends BasicLogger {
     MicroProfileConfigLogger ROOT_LOGGER = Logger.getMessageLogger(MicroProfileConfigLogger.class, MicroProfileConfigLogger.class.getPackage().getName());
 
     /**
-     * Logs an informational message indicating the naming subsystem is being activated.
+     * Logs an informational message indicating the MicroProfile Config subsystem is being activated.
      */
     @LogMessage(level = INFO)
     @Message(id = 1, value = "Activating Eclipse MicroProfile Config Subsystem")
@@ -44,4 +44,12 @@ public interface MicroProfileConfigLogger extends BasicLogger {
 
     @Message(id = 2, value = "Unable to load class %s from module %s")
     OperationFailedException unableToLoadClassFromModule(String className, String moduleName);
+
+    @LogMessage(level = INFO)
+    @Message(id = 3, value = "Use directory for MicroProfile Config Source: %s")
+    void loadConfigSourceFromDir(String path);
+
+    @LogMessage(level = INFO)
+    @Message(id = 4, value = "Use class for MicroProfile Config Source: %s")
+    void loadConfigSourceFromClass(Class clazz);
 }

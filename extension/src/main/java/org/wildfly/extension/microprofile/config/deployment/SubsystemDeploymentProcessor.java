@@ -16,51 +16,32 @@
 
 package org.wildfly.extension.microprofile.config.deployment;
 
-import java.util.List;
-
 import io.smallrye.config.SmallRyeConfigBuilder;
-import io.smallrye.config.inject.ConfigExtension;
 import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.spi.ConfigBuilder;
 import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.eclipse.microprofile.config.spi.ConfigSourceProvider;
-import org.jboss.as.ee.weld.WeldDeploymentMarker;
+import org.jboss.as.server.deployment.AttachmentKey;
 import org.jboss.as.server.deployment.Attachments;
 import org.jboss.as.server.deployment.DeploymentPhaseContext;
 import org.jboss.as.server.deployment.DeploymentUnit;
-import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
-import org.jboss.as.server.deployment.Phase;
-import org.jboss.as.weld.deployment.WeldPortableExtensions;
-import org.jboss.logging.Logger;
 import org.jboss.modules.Module;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
 import org.jboss.msc.service.ServiceRegistry;
 import org.wildfly.extension.microprofile.config.ServiceNames;
 
-/**
- */
+import java.util.List;
+
 public class SubsystemDeploymentProcessor implements DeploymentUnitProcessor {
 
-    Logger log = Logger.getLogger(SubsystemDeploymentProcessor.class);
-
-    /**
-     * See {@link Phase} for a description of the different phases
-     */
-    public static final Phase PHASE = Phase.POST_MODULE;
-
-    /**
-     * The relative order of this processor within the {@link #PHASE}.
-     * The current number is large enough for it to happen after all
-     * the standard deployment unit processors that come with JBoss AS.
-     */
-    public static final int PRIORITY = 0x4000;
+    public static final AttachmentKey<Config> CONFIG = AttachmentKey.create(Config.class);
+    public static final AttachmentKey<ConfigProviderResolver> CONFIG_PROVIDER_RESOLVER = AttachmentKey.create(ConfigProviderResolver.class);
 
     @Override
-    public void deploy(DeploymentPhaseContext phaseContext) throws DeploymentUnitProcessingException {
+    public void deploy(DeploymentPhaseContext phaseContext) {
         DeploymentUnit deploymentUnit = phaseContext.getDeploymentUnit();
         Module module = deploymentUnit.getAttachment(Attachments.MODULE);
 
@@ -71,14 +52,10 @@ public class SubsystemDeploymentProcessor implements DeploymentUnitProcessor {
                 .addDiscoveredConverters();
         addConfigSourcesFromServices(builder, phaseContext.getServiceRegistry(), module.getClassLoader());
         Config config = builder.build();
+        deploymentUnit.putAttachment(CONFIG, config);
 
-        ConfigProviderResolver.instance().registerConfig(config, module.getClassLoader());
-
-        if (WeldDeploymentMarker.isPartOfWeldDeployment(deploymentUnit)) {
-            WeldPortableExtensions extensions = WeldPortableExtensions.getPortableExtensions(deploymentUnit);
-            extensions.registerExtensionInstance(new ConfigExtension(), deploymentUnit);
-        }
-
+        ConfigProviderResolver configProviderResolver = deploymentUnit.getAttachment(CONFIG_PROVIDER_RESOLVER);
+        configProviderResolver.registerConfig(config, module.getClassLoader());
     }
 
     private void addConfigSourcesFromServices(ConfigBuilder builder, ServiceRegistry serviceRegistry, ClassLoader classloader) {
@@ -100,11 +77,9 @@ public class SubsystemDeploymentProcessor implements DeploymentUnitProcessor {
 
     @Override
     public void undeploy(DeploymentUnit context) {
-        Module module = context.getAttachment(Attachments.MODULE);
-        try {
-            ConfigProviderResolver.instance().releaseConfig(ConfigProvider.getConfig(module.getClassLoader()));
-        } catch (IllegalStateException e) {
-            // Do nothing
-        }
+        Config config = context.getAttachment(CONFIG);
+        ConfigProviderResolver configProviderResolver = context.getAttachment(CONFIG_PROVIDER_RESOLVER);
+
+        configProviderResolver.releaseConfig(config);
     }
 }

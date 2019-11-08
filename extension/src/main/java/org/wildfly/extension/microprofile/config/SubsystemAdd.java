@@ -18,10 +18,11 @@ package org.wildfly.extension.microprofile.config;
 
 import org.jboss.as.controller.AbstractBoottimeAddStepHandler;
 import org.jboss.as.controller.OperationContext;
-import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.server.AbstractDeploymentChainStep;
 import org.jboss.as.server.DeploymentProcessorTarget;
+import org.jboss.as.server.deployment.Phase;
 import org.jboss.dmr.ModelNode;
+import org.jboss.msc.service.ServiceBuilder;
 import org.wildfly.extension.microprofile.config.deployment.DependencyProcessor;
 import org.wildfly.extension.microprofile.config.deployment.SubsystemDeploymentProcessor;
 
@@ -32,39 +33,32 @@ import org.wildfly.extension.microprofile.config.deployment.SubsystemDeploymentP
  */
 class SubsystemAdd extends AbstractBoottimeAddStepHandler {
 
-    static final SubsystemAdd INSTANCE = new SubsystemAdd();
-
-    private SubsystemAdd() {
+    SubsystemAdd() {
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void performBoottime(OperationContext context, ModelNode operation, ModelNode model) throws OperationFailedException {
+    public void performBoottime(OperationContext context, ModelNode operation, ModelNode model) {
 
         MicroProfileConfigLogger.ROOT_LOGGER.activatingSubsystem();
 
         ConfigProviderService.install(context);
 
-        //Add deployment processors here
-        //Remove this if you don't need to hook into the deployers, or you can add as many as you like
-        //see SubDeploymentProcessor for explanation of the phases
+        // Add a void service other capabilities can use to ensure MP Config is ready
+        ServiceBuilder capSvc = context.getCapabilityServiceTarget().addCapability(SubsystemDefinition.CONFIG_CAPABILITY);
+        capSvc.requires(ServiceNames.CONFIG_PROVIDER);
+        capSvc.install();
+
         context.addStep(new AbstractDeploymentChainStep() {
             public void execute(DeploymentProcessorTarget processorTarget) {
-                processorTarget.addDeploymentProcessor(SubsystemExtension.SUBSYSTEM_NAME, DependencyProcessor.PHASE, DependencyProcessor.PRIORITY, new DependencyProcessor());
-                processorTarget.addDeploymentProcessor(SubsystemExtension.SUBSYSTEM_NAME, SubsystemDeploymentProcessor.PHASE, SubsystemDeploymentProcessor.PRIORITY, new SubsystemDeploymentProcessor());
+                processorTarget.addDeploymentProcessor(SubsystemExtension.SUBSYSTEM_NAME, Phase.DEPENDENCIES, Phase.DEPENDENCIES_MICROPROFILE_CONFIG, new DependencyProcessor());
+                processorTarget.addDeploymentProcessor(SubsystemExtension.SUBSYSTEM_NAME, Phase.POST_MODULE, Phase.POST_MODULE_MICROPROFILE_CONFIG, new SubsystemDeploymentProcessor());
 
             }
         }, OperationContext.Stage.RUNTIME);
 
     }
+
 }

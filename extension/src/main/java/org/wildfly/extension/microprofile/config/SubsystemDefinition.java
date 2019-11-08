@@ -21,19 +21,30 @@ import java.util.Collections;
 
 import org.jboss.as.controller.AttributeDefinition;
 import org.jboss.as.controller.PersistentResourceDefinition;
+import org.jboss.as.controller.SimpleResourceDefinition;
+import org.jboss.as.controller.capability.RuntimeCapability;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
+
+import static org.jboss.as.weld.Capabilities.WELD_CAPABILITY_NAME;
 
 /**
  * @author <a href="mailto:tcerar@redhat.com">Tomaz Cerar</a>
  */
 public class SubsystemDefinition extends PersistentResourceDefinition {
-    protected SubsystemDefinition() {
-        super(SubsystemExtension.SUBSYSTEM_PATH,
-                SubsystemExtension.getResourceDescriptionResolver(SubsystemExtension.SUBSYSTEM_NAME),
-                //We always need to add an 'add' operation
-                SubsystemAdd.INSTANCE,
-                //Every resource that is added, normally needs a remove operation
-                SubsystemRemove.INSTANCE);
+    private static final String CONFIG_CAPABILITY_NAME = "org.wildlfy.microprofile.config";
+
+    static final RuntimeCapability<Void> CONFIG_CAPABILITY =
+            RuntimeCapability.Builder.of(CONFIG_CAPABILITY_NAME)
+                    .setServiceType(Void.class)
+                    .addRequirements(WELD_CAPABILITY_NAME)
+                    .build();
+
+    SubsystemDefinition() {
+        super(new SimpleResourceDefinition.Parameters(SubsystemExtension.SUBSYSTEM_PATH, SubsystemExtension.getResourceDescriptionResolver(SubsystemExtension.SUBSYSTEM_NAME))
+                .setAddHandler(new SubsystemAdd())
+                .setRemoveHandler(new SubsystemRemove())
+                .setCapabilities(CONFIG_CAPABILITY)
+        );
     }
 
     @Override

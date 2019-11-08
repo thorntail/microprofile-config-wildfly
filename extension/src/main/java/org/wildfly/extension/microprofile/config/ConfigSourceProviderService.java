@@ -29,7 +29,7 @@ import org.jboss.msc.service.StopContext;
 /**
  * @author <a href="http://jmesnil.net/">Jeff Mesnil</a> (c) 2017 Red Hat inc.
  */
-public class ConfigSourceProviderService implements Service<ConfigSourceProvider> {
+class ConfigSourceProviderService implements Service<ConfigSourceProvider> {
 
     private final ConfigSourceProvider configSourceProvider;
 

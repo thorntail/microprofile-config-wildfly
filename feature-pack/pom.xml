@@ -13,7 +13,23 @@
     <packaging>pom</packaging>
 
     <dependencies>
-        <!-- feature pack dependencies -->
+        <dependency>
+            <groupId>io.smallrye</groupId>
+            <artifactId>smallrye-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.thorntail</groupId>
+            <artifactId>microprofile-config-wildfly-extension</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.spec.javax.annotation</groupId>
+            <artifactId>jboss-annotations-api_1.3_spec</artifactId>
+            <version>${version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.3_spec}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.wildfly</groupId>
@@ -25,18 +41,6 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <!-- module dependencies -->
-
-        <dependency>
-            <groupId>io.thorntail</groupId>
-            <artifactId>microprofile-config-wildfly-extension</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.smallrye</groupId>
-            <artifactId>smallrye-config</artifactId>
         </dependency>
     </dependencies>
 
@@ -54,17 +58,16 @@
                 <executions>
                     <execution>
                         <id>feature-pack-build</id>
+                        <phase>compile</phase>
                         <goals>
                             <goal>build</goal>
                         </goals>
-                        <phase>compile</phase>
                         <configuration>
                             <config-file>feature-pack-build.xml</config-file>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
