@@ -27,7 +27,7 @@
 
     <groupId>io.thorntail</groupId>
     <artifactId>microprofile-config-wildfly</artifactId>
-    <version>1.9.0</version>
+    <version>1.9.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>WildFly: MicroProfile Config</name>
@@ -59,7 +59,7 @@
         <connection>scm:git:git@github.com:thorntail/microprofile-config-wildfly.git</connection>
         <developerConnection>scm:git:git@github.com:thorntail/microprofile-config-wildfly.git</developerConnection>
         <url>https://github.com/thorntail/microprofile-config-wildfly/</url>
-        <tag>1.9.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <modules>
