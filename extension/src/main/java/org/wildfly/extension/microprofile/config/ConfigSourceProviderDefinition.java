@@ -41,7 +41,7 @@ import org.jboss.modules.ModuleIdentifier;
 /**
  * @author <a href="http://jmesnil.net/">Jeff Mesnil</a> (c) 2017 Red Hat inc.
  */
-public class ConfigSourceProviderDefinition extends PersistentResourceDefinition {
+class ConfigSourceProviderDefinition extends PersistentResourceDefinition {
 
     static ObjectTypeAttributeDefinition CLASS = ObjectTypeAttributeDefinition.Builder.of("class",
             create(NAME, ModelType.STRING, false)

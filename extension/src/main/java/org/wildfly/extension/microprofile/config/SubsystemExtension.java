@@ -49,6 +49,8 @@ public class SubsystemExtension implements Extension {
     protected static final ModelVersion VERSION_1_0_0 = ModelVersion.create(1, 0, 0);
     private static final ModelVersion CURRENT_MODEL_VERSION = VERSION_1_0_0;
 
+    private static final SubsystemParser_1_0 CURRENT_PARSER = new SubsystemParser_1_0();
+
     static ResourceDescriptionResolver getResourceDescriptionResolver(final String... keyPrefix) {
         return getResourceDescriptionResolver(true, keyPrefix);
     }
@@ -66,7 +68,7 @@ public class SubsystemExtension implements Extension {
     @Override
     public void initialize(ExtensionContext context) {
         final SubsystemRegistration subsystem = context.registerSubsystem(SUBSYSTEM_NAME, CURRENT_MODEL_VERSION);
-        subsystem.registerXMLElementWriter(SubsytemParser_1_0.INSTANCE);
+        subsystem.registerXMLElementWriter(CURRENT_PARSER);
 
         final ManagementResourceRegistration registration = subsystem.registerSubsystemModel(new SubsystemDefinition());
         registration.registerOperationHandler(GenericSubsystemDescribeHandler.DEFINITION, GenericSubsystemDescribeHandler.INSTANCE);
@@ -76,7 +78,7 @@ public class SubsystemExtension implements Extension {
     }
 
     public void initializeParsers(ExtensionParsingContext context) {
-        context.setSubsystemXmlMapping(SUBSYSTEM_NAME, SubsytemParser_1_0.NAMESPACE, SubsytemParser_1_0.INSTANCE);
+        context.setSubsystemXmlMapping(SUBSYSTEM_NAME, SubsystemParser_1_0.NAMESPACE, CURRENT_PARSER);
     }
 
 }

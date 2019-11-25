@@ -49,20 +49,22 @@ import org.jboss.modules.ModuleIdentifier;
 /**
  * @author <a href="http://jmesnil.net/">Jeff Mesnil</a> (c) 2017 Red Hat inc.
  */
-public class ConfigSourceDefinition extends PersistentResourceDefinition {
+class ConfigSourceDefinition extends PersistentResourceDefinition {
 
     static AttributeDefinition ORDINAL = SimpleAttributeDefinitionBuilder.create("ordinal", ModelType.INT)
             .setDefaultValue(new ModelNode(100))
-            .setAllowNull(true)
+            .setRequired(false)
             .setRestartAllServices()
             .build();
+
     static AttributeDefinition PROPERTIES = new PropertiesAttributeDefinition.Builder("properties", true)
             .setAttributeParser(new AttributeParsers.PropertiesParser(false))
             .setAttributeMarshaller(new AttributeMarshallers.PropertiesAttributeMarshaller(null, false))
             .setAlternatives("class", "dir")
-            .setAllowNull(true)
+            .setRequired(false)
             .setRestartAllServices()
             .build();
+
     static ObjectTypeAttributeDefinition CLASS = ObjectTypeAttributeDefinition.Builder.of("class",
             create(NAME, ModelType.STRING, false)
                     .setAllowExpression(false)
@@ -71,14 +73,15 @@ public class ConfigSourceDefinition extends PersistentResourceDefinition {
                     .setAllowExpression(false)
                     .build())
             .setAlternatives("properties", "dir")
-            .setAllowNull(true)
+            .setRequired(false)
             .setAttributeMarshaller(AttributeMarshaller.ATTRIBUTE_OBJECT)
             .setRestartAllServices()
             .build();
+
     static AttributeDefinition DIR = SimpleAttributeDefinitionBuilder.create("dir", ModelType.STRING)
             .setAllowExpression(true)
             .setAlternatives("class", "properties")
-            .setAllowNull(true)
+            .setRequired(false)
             .setRestartAllServices()
             .build();
 
@@ -106,17 +109,18 @@ public class ConfigSourceDefinition extends PersistentResourceDefinition {
                             Class configSourceClass = unwrapClass(classModel);
                             try {
                                 configSource = ConfigSource.class.cast(configSourceClass.newInstance());
+                                MicroProfileConfigLogger.ROOT_LOGGER.loadConfigSourceFromClass(configSourceClass);
                             } catch (Exception e) {
                                 throw new OperationFailedException(e);
                             }
                         } else if (dirModel.isDefined()) {
                             File dir = new File(dirModel.asString());
                             configSource = new DirConfigSource(dir, ordinal);
+                            MicroProfileConfigLogger.ROOT_LOGGER.loadConfigSourceFromDir(dir.getAbsolutePath());
                         } else {
                             Map<String, String> properties = PropertiesAttributeDefinition.unwrapModel(context, props);
                             configSource = new PropertiesConfigSource(properties, name, ordinal);
                         }
-                        MicroProfileConfigLogger.ROOT_LOGGER.info("Reading properties from " + configSource.getName());
                         ConfigSourceService.install(context, name, configSource);
                     }
                 }, new AbstractRemoveStepHandler() {

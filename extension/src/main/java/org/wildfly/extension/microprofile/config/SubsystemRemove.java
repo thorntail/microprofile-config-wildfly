@@ -18,7 +18,6 @@ package org.wildfly.extension.microprofile.config;
 
 import org.jboss.as.controller.AbstractRemoveStepHandler;
 import org.jboss.as.controller.OperationContext;
-import org.jboss.as.controller.OperationFailedException;
 import org.jboss.dmr.ModelNode;
 
 /**
@@ -28,16 +27,13 @@ import org.jboss.dmr.ModelNode;
  */
 class SubsystemRemove extends AbstractRemoveStepHandler {
 
-    static final SubsystemRemove INSTANCE = new SubsystemRemove();
-
-
-    private SubsystemRemove() {
+    SubsystemRemove() {
     }
 
     @Override
-    protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model) throws OperationFailedException {
+    protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model) {
+        context.removeService(SubsystemDefinition.CONFIG_CAPABILITY.getCapabilityServiceName(Void.class));
         context.removeService(ServiceNames.CONFIG_PROVIDER);
     }
-
 
 }

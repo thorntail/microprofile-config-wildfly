@@ -28,34 +28,20 @@ import org.jboss.logging.Logger;
 import org.jboss.modules.Module;
 import org.jboss.modules.ModuleIdentifier;
 import org.jboss.modules.ModuleLoader;
+import org.wildfly.extension.microprofile.config.ServiceNames;
 
 /**
  * Add dependencies required by deployment unit to access the Config API (programmatically or using CDI).
  */
 public class DependencyProcessor implements DeploymentUnitProcessor {
 
-    Logger log = Logger.getLogger(SubsystemDeploymentProcessor.class);
-
-    /**
-     * See {@link Phase} for a description of the different phases
-     */
-    public static final Phase PHASE = Phase.DEPENDENCIES;
-
-    /**
-     * The relative order of this processor within the {@link #PHASE}.
-     * The current number is large enough for it to happen after all
-     * the standard deployment unit processors that come with JBoss AS.
-     */
-    public static final int PRIORITY = 0x4000;
-
-    public static final ModuleIdentifier MICROPROFILE_CONFIG_API = ModuleIdentifier.create("org.eclipse.microprofile.config.api");
-    public static final ModuleIdentifier MICROPROFILE_CONFIG_EXTENSION = ModuleIdentifier.create("org.wildfly.extension.microprofile.config");
-
     @Override
-    public void deploy(DeploymentPhaseContext phaseContext) throws DeploymentUnitProcessingException {
+    public void deploy(DeploymentPhaseContext phaseContext) {
         DeploymentUnit deploymentUnit = phaseContext.getDeploymentUnit();
 
         addDependencies(deploymentUnit);
+
+        phaseContext.addDeploymentDependency(ServiceNames.CONFIG_PROVIDER, SubsystemDeploymentProcessor.CONFIG_PROVIDER_RESOLVER);
     }
 
     @Override
@@ -66,8 +52,8 @@ public class DependencyProcessor implements DeploymentUnitProcessor {
         final ModuleSpecification moduleSpecification = deploymentUnit.getAttachment(Attachments.MODULE_SPECIFICATION);
         final ModuleLoader moduleLoader = Module.getBootModuleLoader();
 
-        moduleSpecification.addSystemDependency(new ModuleDependency(moduleLoader, MICROPROFILE_CONFIG_API, false, false, true, false));
-        moduleSpecification.addSystemDependency(new ModuleDependency(moduleLoader, MICROPROFILE_CONFIG_EXTENSION, false, false, true, false));
+        moduleSpecification.addSystemDependency(new ModuleDependency(moduleLoader, "org.eclipse.microprofile.config.api", false, false, true, false));
+        moduleSpecification.addSystemDependency(new ModuleDependency(moduleLoader, "io.smallrye.config", false, false, true, false));
     }
 
 }

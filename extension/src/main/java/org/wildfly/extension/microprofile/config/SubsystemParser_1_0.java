@@ -25,25 +25,23 @@ import org.jboss.as.controller.PersistentResourceXMLParser;
 /**
  * @author <a href="http://jmesnil.net/">Jeff Mesnil</a> (c) 2017 Red Hat inc.
  */
-public class SubsytemParser_1_0  extends PersistentResourceXMLParser {
+public class SubsystemParser_1_0 extends PersistentResourceXMLParser {
     /**
      * The name space used for the {@code subsystem} element
      */
     public static final String NAMESPACE = "urn:wildfly:microprofile-config:1.0";
 
-    static final PersistentResourceXMLParser INSTANCE = new SubsytemParser_1_0();
-
     private static final PersistentResourceXMLDescription xmlDescription;
 
     static {
-        xmlDescription = builder(new SubsystemDefinition(), NAMESPACE)
-                .addChild(builder(new ConfigSourceDefinition())
+        xmlDescription = builder(SubsystemExtension.SUBSYSTEM_PATH, NAMESPACE)
+                .addChild(builder(SubsystemExtension.CONFIG_SOURCE_PATH)
                         .addAttributes(
                                 ConfigSourceDefinition.ORDINAL,
                                 ConfigSourceDefinition.PROPERTIES,
                                 ConfigSourceDefinition.CLASS,
                                 ConfigSourceDefinition.DIR))
-                .addChild(builder(new ConfigSourceProviderDefinition())
+                .addChild(builder(SubsystemExtension.CONFIG_SOURCE_PROVIDER_PATH)
                         .addAttributes(
                                 ConfigSourceProviderDefinition.CLASS))
                 .build();
