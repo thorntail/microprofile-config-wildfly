@@ -19,15 +19,15 @@ package org.wildfly.extension.microprofile.config;
 import static org.jboss.as.controller.SimpleAttributeDefinitionBuilder.create;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.MODULE;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.NAME;
-import static org.wildfly.extension.microprofile.config.MicroProfileConfigLogger.ROOT_LOGGER;
+import static org.wildfly.extension.microprofile.config._private.MicroProfileConfigLogger.ROOT_LOGGER;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
-import io.smallrye.config.DirConfigSource;
 import io.smallrye.config.PropertiesConfigSource;
+import io.smallrye.config.source.file.FileSystemConfigSource;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.jboss.as.controller.AbstractAddStepHandler;
 import org.jboss.as.controller.AbstractRemoveStepHandler;
@@ -45,6 +45,7 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.modules.Module;
 import org.jboss.modules.ModuleIdentifier;
+import org.wildfly.extension.microprofile.config._private.MicroProfileConfigLogger;
 
 /**
  * @author <a href="http://jmesnil.net/">Jeff Mesnil</a> (c) 2017 Red Hat inc.
@@ -87,7 +88,7 @@ class ConfigSourceDefinition extends PersistentResourceDefinition {
 
     static AttributeDefinition[] ATTRIBUTES = { ORDINAL, PROPERTIES, CLASS, DIR };
 
-    protected ConfigSourceDefinition() {
+    protected ConfigSourceDefinition(Registry<ConfigSource> sources) {
         super(SubsystemExtension.CONFIG_SOURCE_PATH,
                 SubsystemExtension.getResourceDescriptionResolver(SubsystemExtension.CONFIG_SOURCE_PATH.getKey()),
                 new AbstractAddStepHandler(ATTRIBUTES) {
@@ -104,30 +105,28 @@ class ConfigSourceDefinition extends PersistentResourceDefinition {
                         ModelNode props = PROPERTIES.resolveModelAttribute(context, model);
                         ModelNode classModel = CLASS.resolveModelAttribute(context, model);
                         ModelNode dirModel = DIR.resolveModelAttribute(context, model);
-                        final ConfigSource configSource;
                         if (classModel.isDefined()) {
-                            Class configSourceClass = unwrapClass(classModel);
+                            Class<?> configSourceClass = unwrapClass(classModel);
                             try {
-                                configSource = ConfigSource.class.cast(configSourceClass.newInstance());
+                                sources.register(name, ConfigSource.class.cast(configSourceClass.newInstance()));
                                 MicroProfileConfigLogger.ROOT_LOGGER.loadConfigSourceFromClass(configSourceClass);
                             } catch (Exception e) {
                                 throw new OperationFailedException(e);
                             }
                         } else if (dirModel.isDefined()) {
                             File dir = new File(dirModel.asString());
-                            configSource = new DirConfigSource(dir, ordinal);
+                            sources.register(name, new FileSystemConfigSource(dir, ordinal));
                             MicroProfileConfigLogger.ROOT_LOGGER.loadConfigSourceFromDir(dir.getAbsolutePath());
                         } else {
                             Map<String, String> properties = PropertiesAttributeDefinition.unwrapModel(context, props);
-                            configSource = new PropertiesConfigSource(properties, name, ordinal);
+                            sources.register(name, new PropertiesConfigSource(properties, name, ordinal));
                         }
-                        ConfigSourceService.install(context, name, configSource);
                     }
                 }, new AbstractRemoveStepHandler() {
                     @Override
-                    protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model) throws OperationFailedException {
+                    protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model) {
                         String name = context.getCurrentAddressValue();
-                        context.removeService(ServiceNames.CONFIG_SOURCE.append(name));
+                        sources.unregister(name);
                     }
                 });
     }
@@ -137,14 +136,13 @@ class ConfigSourceDefinition extends PersistentResourceDefinition {
         return Arrays.asList(ATTRIBUTES);
     }
 
-    private static Class unwrapClass(ModelNode classModel) throws OperationFailedException {
+    private static Class<?> unwrapClass(ModelNode classModel) throws OperationFailedException {
         String className = classModel.get(NAME).asString();
         String moduleName = classModel.get(MODULE).asString();
         try {
             ModuleIdentifier moduleID = ModuleIdentifier.fromString(moduleName);
             Module module = Module.getCallerModuleLoader().loadModule(moduleID);
-            Class<?> clazz = module.getClassLoader().loadClass(className);
-            return clazz;
+            return module.getClassLoader().loadClass(className);
         } catch (Exception e) {
             throw ROOT_LOGGER.unableToLoadClassFromModule(className, moduleName);
         }

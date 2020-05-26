@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wildfly.extension.microprofile.config;
+package org.wildfly.extension.microprofile.config._private;
 
 import static org.jboss.logging.Logger.Level.INFO;
 

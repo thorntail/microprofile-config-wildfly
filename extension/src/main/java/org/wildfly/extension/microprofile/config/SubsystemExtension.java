@@ -16,8 +16,8 @@
 
 package org.wildfly.extension.microprofile.config;
 
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SUBSYSTEM;
-
+import org.eclipse.microprofile.config.spi.ConfigSource;
+import org.eclipse.microprofile.config.spi.ConfigSourceProvider;
 import org.jboss.as.controller.Extension;
 import org.jboss.as.controller.ExtensionContext;
 import org.jboss.as.controller.ModelVersion;
@@ -29,6 +29,7 @@ import org.jboss.as.controller.operations.common.GenericSubsystemDescribeHandler
 import org.jboss.as.controller.parsing.ExtensionParsingContext;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SUBSYSTEM;
 
 /**
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
@@ -70,11 +71,14 @@ public class SubsystemExtension implements Extension {
         final SubsystemRegistration subsystem = context.registerSubsystem(SUBSYSTEM_NAME, CURRENT_MODEL_VERSION);
         subsystem.registerXMLElementWriter(CURRENT_PARSER);
 
-        final ManagementResourceRegistration registration = subsystem.registerSubsystemModel(new SubsystemDefinition());
+        IterableRegistry<ConfigSourceProvider> providers = new IterableRegistry<>();
+        IterableRegistry<ConfigSource> sources = new IterableRegistry<>();
+
+        final ManagementResourceRegistration registration = subsystem.registerSubsystemModel(new SubsystemDefinition(providers, sources));
         registration.registerOperationHandler(GenericSubsystemDescribeHandler.DEFINITION, GenericSubsystemDescribeHandler.INSTANCE);
 
-        registration.registerSubModel(new ConfigSourceDefinition());
-        registration.registerSubModel(new ConfigSourceProviderDefinition());
+        registration.registerSubModel(new ConfigSourceDefinition(sources));
+        registration.registerSubModel(new ConfigSourceProviderDefinition(providers));
     }
 
     public void initializeParsers(ExtensionParsingContext context) {

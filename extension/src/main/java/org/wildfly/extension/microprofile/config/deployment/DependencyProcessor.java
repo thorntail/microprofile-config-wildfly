@@ -19,16 +19,11 @@ package org.wildfly.extension.microprofile.config.deployment;
 import org.jboss.as.server.deployment.Attachments;
 import org.jboss.as.server.deployment.DeploymentPhaseContext;
 import org.jboss.as.server.deployment.DeploymentUnit;
-import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
-import org.jboss.as.server.deployment.Phase;
 import org.jboss.as.server.deployment.module.ModuleDependency;
 import org.jboss.as.server.deployment.module.ModuleSpecification;
-import org.jboss.logging.Logger;
 import org.jboss.modules.Module;
-import org.jboss.modules.ModuleIdentifier;
 import org.jboss.modules.ModuleLoader;
-import org.wildfly.extension.microprofile.config.ServiceNames;
 
 /**
  * Add dependencies required by deployment unit to access the Config API (programmatically or using CDI).
@@ -40,8 +35,6 @@ public class DependencyProcessor implements DeploymentUnitProcessor {
         DeploymentUnit deploymentUnit = phaseContext.getDeploymentUnit();
 
         addDependencies(deploymentUnit);
-
-        phaseContext.addDeploymentDependency(ServiceNames.CONFIG_PROVIDER, SubsystemDeploymentProcessor.CONFIG_PROVIDER_RESOLVER);
     }
 
     @Override

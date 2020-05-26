@@ -16,24 +16,18 @@
 
 package org.wildfly.extension.microprofile.config;
 
-import org.jboss.as.controller.AbstractRemoveStepHandler;
 import org.jboss.as.controller.OperationContext;
-import org.jboss.dmr.ModelNode;
+import org.jboss.msc.Service;
+import org.jboss.msc.service.ServiceName;
+import org.jboss.msc.service.StartContext;
+import org.jboss.msc.service.StopContext;
 
-/**
- * Handler responsible for removing the subsystem resource from the model
- *
- * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
- */
-class SubsystemRemove extends AbstractRemoveStepHandler {
+class ConfigMarkerService {
+    private static final ServiceName NAME = ServiceName.JBOSS.append("eclipse", "microprofile", "config", "marker");
 
-    SubsystemRemove() {
+    static void install(OperationContext context) {
+        context.getServiceTarget().addService(NAME)
+                .setInstance(Service.NULL)
+                .install();
     }
-
-    @Override
-    protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model) {
-        context.removeService(SubsystemDefinition.CONFIG_CAPABILITY.getCapabilityServiceName(Void.class));
-        context.removeService(ServiceNames.CONFIG_PROVIDER);
-    }
-
 }
