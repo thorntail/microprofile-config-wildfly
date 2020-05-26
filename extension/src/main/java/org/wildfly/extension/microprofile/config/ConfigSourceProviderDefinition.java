@@ -19,7 +19,7 @@ package org.wildfly.extension.microprofile.config;
 import static org.jboss.as.controller.SimpleAttributeDefinitionBuilder.create;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.MODULE;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.NAME;
-import static org.wildfly.extension.microprofile.config.MicroProfileConfigLogger.ROOT_LOGGER;
+import static org.wildfly.extension.microprofile.config._private.MicroProfileConfigLogger.ROOT_LOGGER;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -58,7 +58,7 @@ class ConfigSourceProviderDefinition extends PersistentResourceDefinition {
 
     static AttributeDefinition[] ATTRIBUTES = { CLASS };
 
-    protected ConfigSourceProviderDefinition() {
+    protected ConfigSourceProviderDefinition(Registry<ConfigSourceProvider> providers) {
         super(SubsystemExtension.CONFIG_SOURCE_PROVIDER_PATH,
                 SubsystemExtension.getResourceDescriptionResolver(SubsystemExtension.CONFIG_SOURCE_PROVIDER_PATH.getKey()),
                 new AbstractAddStepHandler(ATTRIBUTES) {
@@ -73,10 +73,9 @@ class ConfigSourceProviderDefinition extends PersistentResourceDefinition {
                         String name = context.getCurrentAddressValue();
                         ModelNode classModel = CLASS.resolveModelAttribute(context, model);
                         if (classModel.isDefined()) {
-                            Class configSourceProviderClass = unwrapClass(classModel);
+                            Class<?> configSourceProviderClass = unwrapClass(classModel);
                             try {
-                                ConfigSourceProvider configSourceProvider = ConfigSourceProvider.class.cast(configSourceProviderClass.newInstance());
-                                ConfigSourceProviderService.install(context, name, configSourceProvider);
+                                providers.register(name, ConfigSourceProvider.class.cast(configSourceProviderClass.newInstance()));
                             } catch (Exception e) {
                                 throw new OperationFailedException(e);
                             }
@@ -84,9 +83,9 @@ class ConfigSourceProviderDefinition extends PersistentResourceDefinition {
                     }
                 }, new AbstractRemoveStepHandler() {
                     @Override
-                    protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model) throws OperationFailedException {
+                    protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model) {
                         String name = context.getCurrentAddressValue();
-                        context.removeService(ServiceNames.CONFIG_SOURCE_PROVIDER.append(name));
+                        providers.unregister(name);
                     }
                 });
     }
@@ -96,14 +95,13 @@ class ConfigSourceProviderDefinition extends PersistentResourceDefinition {
         return Arrays.asList(ATTRIBUTES);
     }
 
-    private static Class unwrapClass(ModelNode classModel) throws OperationFailedException {
+    private static Class<?> unwrapClass(ModelNode classModel) throws OperationFailedException {
         String className = classModel.get(NAME).asString();
         String moduleName = classModel.get(MODULE).asString();
         try {
             ModuleIdentifier moduleID = ModuleIdentifier.fromString(moduleName);
             Module module = Module.getCallerModuleLoader().loadModule(moduleID);
-            Class<?> clazz = module.getClassLoader().loadClass(className);
-            return clazz;
+            return module.getClassLoader().loadClass(className);
         } catch (Exception e) {
             throw ROOT_LOGGER.unableToLoadClassFromModule(className, moduleName);
         }

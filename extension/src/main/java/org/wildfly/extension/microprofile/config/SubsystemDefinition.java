@@ -19,8 +19,11 @@ package org.wildfly.extension.microprofile.config;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.eclipse.microprofile.config.spi.ConfigSource;
+import org.eclipse.microprofile.config.spi.ConfigSourceProvider;
 import org.jboss.as.controller.AttributeDefinition;
 import org.jboss.as.controller.PersistentResourceDefinition;
+import org.jboss.as.controller.ReloadRequiredRemoveStepHandler;
 import org.jboss.as.controller.SimpleResourceDefinition;
 import org.jboss.as.controller.capability.RuntimeCapability;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
@@ -35,14 +38,13 @@ public class SubsystemDefinition extends PersistentResourceDefinition {
 
     static final RuntimeCapability<Void> CONFIG_CAPABILITY =
             RuntimeCapability.Builder.of(CONFIG_CAPABILITY_NAME)
-                    .setServiceType(Void.class)
                     .addRequirements(WELD_CAPABILITY_NAME)
                     .build();
 
-    SubsystemDefinition() {
+    protected SubsystemDefinition(Iterable<ConfigSourceProvider> providers, Iterable<ConfigSource> sources) {
         super(new SimpleResourceDefinition.Parameters(SubsystemExtension.SUBSYSTEM_PATH, SubsystemExtension.getResourceDescriptionResolver(SubsystemExtension.SUBSYSTEM_NAME))
-                .setAddHandler(new SubsystemAdd())
-                .setRemoveHandler(new SubsystemRemove())
+                .setAddHandler(new SubsystemAdd(providers, sources))
+                .setRemoveHandler(ReloadRequiredRemoveStepHandler.INSTANCE)
                 .setCapabilities(CONFIG_CAPABILITY)
         );
     }
