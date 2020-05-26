@@ -36,7 +36,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <version.io.smallrye.config>1.6.2</version.io.smallrye.config>
-        <version.io.thorntail.config-api>1.9.0</version.io.thorntail.config-api>
+        <version.io.thorntail.config-api>2.7.0</version.io.thorntail.config-api>
         <version.jakarta.enterprise.cdi-api>2.0.2</version.jakarta.enterprise.cdi-api>
         <version.junit>4.12</version.junit>
         <version.org.apache.httpcomponents>4.5.4</version.org.apache.httpcomponents>
