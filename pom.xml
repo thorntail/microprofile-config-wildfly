@@ -38,7 +38,7 @@
         <version.io.smallrye.config>1.6.2</version.io.smallrye.config>
         <version.io.thorntail.config-api>2.7.0</version.io.thorntail.config-api>
         <version.jakarta.enterprise.cdi-api>2.0.2</version.jakarta.enterprise.cdi-api>
-        <version.junit>4.12</version.junit>
+        <version.junit>4.13.1</version.junit>
         <version.org.apache.httpcomponents>4.5.4</version.org.apache.httpcomponents>
         <version.org.eclipse.microprofile.config>1.4</version.org.eclipse.microprofile.config>
         <version.org.jboss.arquillian>1.4.0.Final</version.org.jboss.arquillian>
